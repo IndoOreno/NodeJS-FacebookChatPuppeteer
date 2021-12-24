@@ -164,7 +164,8 @@ module.exports = class {
       this.options.debug && console.log('Logging in...')
 
       const browser = (this._browser = await puppeteer.launch({
-        headless: !this.options.debug
+        headless: !this.options.debug,
+        args: ['--no-sandbox']
       }))
       const page = (this._masterPage = (await browser.pages())[0]) // await browser.newPage())
 
