@@ -273,6 +273,14 @@ module.exports = class {
     })
   }
 
+  async readMessage (target) {
+    const parent = this;
+
+    this._delegate(target, async function () {
+      await parent._checkTemporaryBlocked(this, target)
+    })
+  }
+
   async sendMessage (target, data) {
     if (typeof data === 'number') {
       data = data.toString()
