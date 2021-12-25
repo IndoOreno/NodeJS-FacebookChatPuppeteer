@@ -241,7 +241,7 @@ module.exports = class {
   async _setTarget (page, target) {
     target = target.toString()
 
-    const threadPrefix = 'https://m.facebook.com/messages/read/?tid='
+    const threadPrefix = 'https://mobile.facebook.com/messages/read/?tid='
     let slug = page.url().substr(threadPrefix.length)
 
     if (target === this.threadHandleToID(slug)) {
