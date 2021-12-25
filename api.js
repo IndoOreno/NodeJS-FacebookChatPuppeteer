@@ -258,6 +258,21 @@ module.exports = class {
     return response
   }
 
+  async _checkTemporaryBlocked (_delegate, target) {
+    let title = await _delegate.title()
+
+    if (title !== 'You’re Temporarily Blocked') return null
+
+    console.debug('Temporarily Blocked')
+
+    const button = await _delegate.$x('//a[contains(text(), "Okay")]')
+    await button[0].click()
+
+    return await _delegate.goto(`https://mobile.facebook.com/messages/read/?tid=${target.toString()}`, {
+      waitUntil: 'networkidle2'
+    })
+  }
+
   async sendMessage (target, data) {
     if (typeof data === 'number') {
       data = data.toString()
@@ -265,7 +280,11 @@ module.exports = class {
       data = await data()
     }
 
+    const parent = this;
+
     this._delegate(target, async function () {
+      await parent._checkTemporaryBlocked(this, target)
+
       const inputElem = await this.$('[placeholder="Write a message..."]')
 
       await inputElem.type(data)
@@ -356,7 +375,11 @@ module.exports = class {
       ? imagePathOrImagePaths
       : Array(imagePathOrImagePaths)
 
+    const parent = this;
+
     return this._delegate(target, async function () {
+      await parent._checkTemporaryBlocked(this, target)
+
       for (const imagePath of images) {
         let uploadBtn = await this.$(
           'input[type=file][data-sigil="m-raw-file-input"]'
