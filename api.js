@@ -3,6 +3,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
 const atob = require('atob')
 const Queue = require('queue')
+const merge = require('deepmerge')
 
 const Order = Symbol('Order')
 
@@ -161,17 +162,17 @@ module.exports = class {
     return this._masterPage.cookies()
   }
 
-  async login (email, password) {
+  async login (email, password, pOptions) {
     return new Promise(async (resolve, reject) => {
       this.options.debug && console.log('Logging in...')
 
       puppeteer.use(StealthPlugin())
       puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
 
-      const browser = (this._browser = await puppeteer.launch({
-        headless: !this.options.debug,
-        args: ['--no-sandbox']
-      }))
+      const dOptions = { headless: !this.options.debug, args: [] }
+      pOptions = merge(dOptions, pOptions || {})
+
+      const browser = (this._browser = await puppeteer.launch(pOptions))
       const page = (this._masterPage = (await browser.pages())[0]) // await browser.newPage())
 
       if (this.options.session) {
