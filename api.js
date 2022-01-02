@@ -1,4 +1,6 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
 const atob = require('atob')
 const Queue = require('queue')
 
@@ -162,6 +164,9 @@ module.exports = class {
   async login (email, password) {
     return new Promise(async (resolve, reject) => {
       this.options.debug && console.log('Logging in...')
+
+      puppeteer.use(StealthPlugin())
+      puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
 
       const browser = (this._browser = await puppeteer.launch({
         headless: !this.options.debug,
