@@ -284,6 +284,8 @@ module.exports = class {
 
     this._delegate(target, async function () {
       await parent._checkTemporaryBlocked(this, target)
+
+      await this.$eval('#page', (el) => el.scrollIntoView())
     })
   }
 
